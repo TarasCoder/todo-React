@@ -1,20 +1,31 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
+import List from "./List";
 
 function App() {
-
-  const [currentItem, setCurrentItem] = useState("");
+  const [inputText, setInputText] = useState("");
   const [items, setItems] = useState([]);
 
-  function addInput(event){
-    let newValue = event.target.value;
-    setCurrentItem(newValue);
+  function handleChange(event) {
+    const newValue = event.target.value;
+    setInputText(newValue);
   }
-  function addBtn(ev){
+
+  function addItem(ev) {
     ev.preventDefault();
-    setItems((previousItem) => {
-      return [...previousItem, currentItem]
-    })
-    setCurrentItem("");
+    if (inputText) {
+      setItems((prevItems) => {
+        return [...prevItems, inputText];
+      });
+      setInputText("");
+    } else alert("Enter something!");
+  }
+
+  function deleteItem(id) {
+    setItems((prev) => {
+      return prev.filter((item, index) => {
+        return index !== id;
+      });
+    });
   }
 
   return (
@@ -22,19 +33,19 @@ function App() {
       <div className="heading">
         <h1>To-Do List</h1>
       </div>
-      <form>
-        <div className="form">
-          <input onChange={addInput} type="text" value={currentItem} />
-          <button onClick={addBtn}>
+      <div className="form">
+        <form>
+          <input onChange={handleChange} type="text" value={inputText} />
+          <button onClick={addItem}>
             <span>Add</span>
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
       <div>
         <ul>
-          {items.map((item)=>{
-            return <li>{item}</li>
-          })}
+          {items.map((todoItem, index) => (
+            <List key={index} id={index} text={todoItem} onCheck={deleteItem} />
+          ))}
         </ul>
       </div>
     </div>
@@ -42,9 +53,3 @@ function App() {
 }
 
 export default App;
-
-//CHALLENGE: Make this app work by applying what you've learnt.
-//1. When new text is written into the input, its state should be saved.
-//2. When the add button is pressed, the current data in the input should be
-//added to an array.
-//3. The <ul> should display all the array items as <li>s
